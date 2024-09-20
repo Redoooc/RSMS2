@@ -225,14 +225,14 @@ useSourceListStatusStore().$subscribe((_args,state)=>{
   if(state.OpenApplySheet == true){
     handleReset()
     SSID.value.value = state.ChooseSource.SSID
-    first_time.value.value = moment().format("YYYY-MM-DD hh:mm:ss")
-    last_time.value.value = moment().add({h:time.value,m:time.value}).format("YYYY-MM-DD hh:mm:ss")
+    first_time.value.value = moment().format("YYYY-MM-DD HH:mm:ss")
+    last_time.value.value = moment().add({h:time.value}).format("YYYY-MM-DD HH:mm:ss")
     user.value.value = useUserDataStore().UserData.user
     name.value.value = useUserDataStore().UserData.name
   }
 })
 watch(time, (_time, _prevtime) => {
-  last_time.value.value = moment().add({h:_time,m:_time}).format("YYYY-MM-DD hh:mm:ss")
+  last_time.value.value = moment().add({h:_time}).format("YYYY-MM-DD HH:mm:ss")
 })
 
 const color = computed(() => {
@@ -253,8 +253,8 @@ const reason_item = ref(['实验使用','源库迁移','教学使用','其他'])
 function UpdateData(){
   handleReset()
   SSID.value.value = useSourceListStatusStore().ChooseSource.SSID
-  first_time.value.value = moment().format("YYYY-MM-DD hh:mm:ss")
-  last_time.value.value = moment().add({h:time.value,m:time.value}).format("YYYY-MM-DD hh:mm:ss")
+  first_time.value.value = moment().format("YYYY-MM-DD HH:mm:ss")
+  last_time.value.value = moment().add({h:time.value}).format("YYYY-MM-DD HH:mm:ss")
   user.value.value = useUserDataStore().UserData.user
   name.value.value = useUserDataStore().UserData.name
 }

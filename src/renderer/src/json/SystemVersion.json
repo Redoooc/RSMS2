@@ -1,5 +1,5 @@
 {
-  "RSMSVersion":"0.2.9" ,
+  "RSMSVersion":"0.3.1" ,
   "SQLVersion":"0.2.8" ,
   "ARMVersion":"0.2.2.B",
   "ip_field": "192.168.0.",

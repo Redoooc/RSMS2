@@ -84,11 +84,11 @@ function EchartsOption(data,type?:'CountRate'|'ADCPulse'){
         },
         {
           gt: 200,
-          lte: 300,
+          lte: 10000,
           color: '#AA069F'
         },
         {
-          gt: 300,
+          gt: 10000,
           color: '#AC3B2A'
         }
       ],
@@ -119,7 +119,7 @@ function EchartsOption(data,type?:'CountRate'|'ADCPulse'){
             yAxis: 200
           },
           {
-            yAxis: 300
+            yAxis: 10000
           }
         ]
       }
@@ -161,6 +161,8 @@ const updateEcharts = ()=>{
     }
   },{once:true})
 }
+
+
 </script>
 
 <style scoped>

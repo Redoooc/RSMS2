@@ -38,7 +38,7 @@
             <v-btn @click=""></v-btn>
           </v-col>
           <v-col cols="9">
-            <v-text-field disabled>{{timeStamp==0?"":moment.unix(timeStamp).format("YYYY-MM-DD hh:mm:ss")}}</v-text-field>
+            <v-text-field disabled>{{timeStamp==0?"":moment.unix(timeStamp).format("YYYY-MM-DD HH:mm:ss")}}</v-text-field>
           </v-col>
         </v-row>
       </v-container>

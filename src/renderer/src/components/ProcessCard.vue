@@ -184,7 +184,7 @@ defineProps<{
 function PASS(apply_id:string){
 
   PassLoading.value = true
-  useUserProcessStore().ApplyProcess('process-pass',moment().format("YYYY-MM-DD hh:mm:ss"),'wait',apply_id)
+  useUserProcessStore().ApplyProcess('process-pass',moment().format("YYYY-MM-DD HH:mm:ss"),'wait',apply_id)
   setTimeout(()=>{
     useUserProcessStore().GetApply()
     setTimeout(()=>{
@@ -200,7 +200,7 @@ function PASS(apply_id:string){
 }
 function FORBID(apply_id:string){
   ForbidLoading.value = true
-  useUserProcessStore().ApplyProcess('process-forbid',moment().format("YYYY-MM-DD hh:mm:ss"),'normal',apply_id)
+  useUserProcessStore().ApplyProcess('process-forbid',moment().format("YYYY-MM-DD HH:mm:ss"),'normal',apply_id)
   setTimeout(()=>{
     useUserProcessStore().GetApply()
     setTimeout(()=>{

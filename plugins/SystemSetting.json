@@ -113,5 +113,43 @@
    "type": "switch",
    "value": true
   }
+ },
+ "ECharts": {
+  "title": {
+   "title": "计数率图表设置",
+   "type": "title",
+   "tips": "",
+   "value": true
+  },
+  "计数率第一阈值": {
+   "title": "",
+   "type": "text",
+   "tips": "~cps",
+   "value": 50
+  },
+  "计数率第二阈值": {
+   "title": "",
+   "type": "text",
+   "tips": "~cps",
+   "value": 100
+  },
+  "计数率第三阈值": {
+   "title": "",
+   "type": "text",
+   "tips": "~cps",
+   "value": 150
+  },
+  "计数率第四阈值": {
+   "title": "",
+   "type": "text",
+   "tips": "~cps",
+   "value": 200
+  },
+  "计数率第五阈值": {
+   "title": "",
+   "type": "text",
+   "tips": "~cps",
+   "value": "10000"
+  }
  }
 }

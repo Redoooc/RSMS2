@@ -5,7 +5,7 @@
   <v-btn :loading="loading" @click="code=useTmpSafeCodeStore().GetCode()">随机Code:{{ code }}</v-btn>
   <v-btn :loading="loading" @click="tmpB">自回调计数</v-btn>
   <v-btn :loading="loading" @click="tmpC">
-    调度器单次获取计数{{ moment.unix(CallBack[0]).format('hh:mm:ss') }},计数率{{ CallBack[1] }}CPS
+    调度器单次获取计数{{ moment.unix(CallBack[0]).format('HH:mm:ss') }},计数率{{ CallBack[1] }}CPS
   </v-btn>
   <v-btn :loading="loading" @click="tmpD">调度器状态</v-btn>
   <v-btn :loading="loading" @click="tmpE">调度器启动</v-btn>

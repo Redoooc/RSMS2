@@ -1,0 +1,5 @@
+
+/*************************2024.9.14 17:34***************************/
+修改所有文件中全部moment中的hh为HH（12小时制改为24小时制），
+修改init-sql.sql中source_list初始化脚本使得nuclide_type可以为tmp以使添加放射源功能正常运行
+修改ApplySource.vue中add(h:time,m:time),删去m:time使得借出时间恰为所选择的小时数

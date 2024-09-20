@@ -127,6 +127,7 @@
                                   @change="useSystemSettingStore().updateSQLText('user', $event)"
                                   hide-details="auto"
                                   label="USER"
+                                  disabled
                                   variant="outlined"
                                 ></v-text-field>
                               </v-col>
@@ -136,7 +137,11 @@
                                   @change="useSystemSettingStore().updateSQLText('password', $event)"
                                   hide-details="auto"
                                   label="PASSWORD"
+                                  :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+                                  :type="visible ? 'text' : 'password'"
+                                  :disabled="!useSystemSettingStore().SystemSetting['数据库设置']['使用本地数据库']['value']"
                                   variant="outlined"
+                                  @click:append-inner="visible = !visible"
                                 ></v-text-field>
                               </v-col>
                             </v-row>
@@ -156,7 +161,7 @@
                           :model-value="subValue['value']"
                           color="green"
                           inset
-                          @change="($event)=>{useSystemSettingStore().MySQL.INIT_SQL.host=$event.target.checked?'localhost':useSystemSettingStore().MySQL.SQL_Backup.host;useSystemSettingStore().MySQL.INIT_SQL.port=$event.target.checked?3306:useSystemSettingStore().MySQL.SQL_Backup.port;useSystemSettingStore().MySQL.SQL.host=$event.target.checked?'localhost':useSystemSettingStore().MySQL.SQL_Backup.host;useSystemSettingStore().MySQL.SQL.port=$event.target.checked?3306:useSystemSettingStore().MySQL.SQL_Backup.port;useSystemSettingStore().updateSwitch(key, subKey, $event)}"
+                          @change="useLocalHost(key, subKey,$event)"
                           hide-details
                         ></v-switch>
                       </v-list-item>
@@ -179,6 +184,7 @@
                       </v-list-item>
                       <v-list-item v-if="subValue['type']==='select'" density="compact">
                         <v-select
+                          style="width: 100px;text-align:right;"
                           :model-value="subValue['value']"
                           :items="subValue['option']"
                           variant="outlined"
@@ -187,6 +193,7 @@
                       </v-list-item>
                       <v-list-item v-if="subValue['type']==='text'" density="compact">
                         <v-text-field
+                          style="width: 100px;text-align:right;"
                           :model-value="subValue['value']"
                           hide-details="auto"
                           variant="outlined"
@@ -211,6 +218,7 @@
 import { useSystemSettingStore } from '../../store/useSystemSettingStore'
 
 const SaveLoading = ref(false)
+const visible = ref(false)
 
 function SaveSetting(){
   SaveLoading.value = true
@@ -222,6 +230,18 @@ function SaveSetting(){
       SaveLoading.value = false
     }
   })
+}
+
+const useLocalHost = (key, subKey,$event) => {
+  useSystemSettingStore().MySQL.INIT_SQL.host = $event.target.checked ? 'localhost' : useSystemSettingStore().MySQL.SQL_Backup.host
+  useSystemSettingStore().MySQL.INIT_SQL.port = $event.target.checked ? 3306 : useSystemSettingStore().MySQL.SQL_Backup.port
+  useSystemSettingStore().MySQL.INIT_SQL.user  = $event.target.checked ? useSystemSettingStore().MySQL.SQL_Backup.user : 'admin'
+  useSystemSettingStore().MySQL.INIT_SQL.password  = $event.target.checked ? useSystemSettingStore().MySQL.SQL_Backup.password : 'GT1PTB14416G'
+  useSystemSettingStore().MySQL.SQL.host = $event.target.checked ? 'localhost' : useSystemSettingStore().MySQL.SQL_Backup.host
+  useSystemSettingStore().MySQL.SQL.port = $event.target.checked ? 3306 : useSystemSettingStore().MySQL.SQL_Backup.port
+  useSystemSettingStore().MySQL.SQL.user = $event.target.checked ? useSystemSettingStore().MySQL.SQL_Backup.user : 'admin'
+  useSystemSettingStore().MySQL.SQL.password = $event.target.checked ? useSystemSettingStore().MySQL.SQL_Backup.password : 'GT1PTB14416G'
+  useSystemSettingStore().updateSwitch(key, subKey, $event)
 }
 </script>
 

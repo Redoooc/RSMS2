@@ -40,6 +40,17 @@ export declare interface SourcesFilterArray {
   SourceStatus?: string,
 }
 
+export declare interface SourcesFilterBufferArray {
+  nuclide_index: number[],
+  nuclide: string[],
+  nuclide_name: string[],
+  nuclide_quality: number[],
+  nuclide_rate: string[],
+  nuclide_type: string[],
+  SSID: string[],
+  SourceStatus: string[],
+}
+
 export declare interface UserSource {
   user: string,
   authority: 'root' | 'normal' | 'guest',
@@ -110,7 +121,7 @@ export declare interface UserDataSources {
 
 export declare interface SQLJson {
   INIT_SQL: PoolOptions,
-  SQL: PoolOptions
+  SQL: PoolOptions,
 }
 
 export declare interface Source_List_Data {

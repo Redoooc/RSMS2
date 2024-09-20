@@ -21,7 +21,7 @@
           <v-row style="margin-top: 15px;margin-right: 10px" no-gutters>
             <v-col cols="12" class="text-center">
               <v-tooltip
-                :text="moment.unix(callback[0]).format('YYYY-MM-DD hh:mm:ss') as string"
+                :text="moment.unix(callback[0]).format('YYYY-MM-DD HH:mm:ss') as string"
                 activator="parent"
                 location="bottom">
                 <template v-slot:activator="{ props }">
@@ -46,7 +46,7 @@
             style="margin: 10px;width: 70px;height: 70px;"
             variant="outlined"
           @click="OpenBox(UserInfo.apply_id,UserInfo.SSID)">
-            打开
+            借取
           </v-btn>
         </v-card>
       </v-col>
@@ -75,7 +75,7 @@
           <v-row style="margin-top: 15px;margin-right: 10px" no-gutters>
             <v-col cols="12" class="text-center">
               <v-tooltip
-                :text="moment.unix(callback[0]).format('YYYY-MM-DD hh:mm:ss') as string"
+                :text="moment.unix(callback[0]).format('YYYY-MM-DD HH:mm:ss') as string"
                 activator="parent"
                 location="bottom">
                 <template v-slot:activator="{ props }">
@@ -100,7 +100,7 @@
             style="margin: 10px;width: 70px;height: 70px;"
             variant="outlined"
             @click="BackOpenBox(UserInfo.apply_id,UserInfo.SSID)">
-            打开
+            归还
           </v-btn>
         </v-card>
       </v-col>
@@ -130,7 +130,7 @@
           <v-row style="margin-top: 15px;margin-right: 10px" no-gutters>
             <v-col cols="12" class="text-center">
               <v-tooltip
-                :text="moment.unix(callback[0]).format('YYYY-MM-DD hh:mm:ss') as string"
+                :text="moment.unix(callback[0]).format('YYYY-MM-DD HH:mm:ss') as string"
                 activator="parent"
                 location="bottom">
                 <template v-slot:activator="{ props }">
@@ -263,7 +263,7 @@ const IntervalCount = (ip: string)=>{
         if (r != null && typeof r != 'string'&& typeof r[0] == 'number')
         {
           callback.value = r
-          useCounterSQLStore().CupBoxCount[CounterSQLID.value].CountBuff.push([moment.unix(r[0]).format('YYYY-MM-DD hh:mm:ss'),r[1]])
+          useCounterSQLStore().CupBoxCount[CounterSQLID.value].CountBuff.push([moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1]])
         }
       })
       if(bustSwitchCache[1]==0){

@@ -1,7 +1,7 @@
 // Utilities
 import { defineStore } from 'pinia'
 import { SQLCallback, SQLJson } from '../type'
-import { ElNotification } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 
 const path = await window.api.getPath()
 const PoolOptions: SQLJson = await window.api.readJSON(path + '/plugins/SQLSetting.json')
@@ -28,19 +28,33 @@ export const useTmpSafeCodeStore = defineStore('TmpSafeCode', {
     CodeCheck(tmp_safe_code:string){
       return SQLPool.execute('SELECT IF(COUNT(*) > 0 AND SUM(tmp_safe_code = ?), TRUE, FALSE) AS result FROM system_info', [tmp_safe_code]) as Promise<[SQLCallback, any]>
     },
-    ChangeCode(){
-      const code = this.GetCode()
+    ChangeCode(){ //该函数目前没有返回值，原代码可返回SQLPool发送数据结果
       const Notification = ()=>{
-        ElNotification({
-          title: '临时安全码已变更',
-          message:h('i', { style: 'color: red'}, '新的临时安全码为' + code+ '，请妥善保管。'),
-          type: 'warning',
-          duration: 0
-        });
+        ElMessageBox.confirm(
+          '是否变更临时安全码？',
+          '警告',
+          {
+            confirmButtonText: '变更',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
+          .then(() => {
+            const code = this.GetCode()
+            SQLPool.execute('update system_info set tmp_safe_code = ?', [code]) as Promise<[SQLCallback, any]>
+            ElMessageBox.alert('新的临时安全码为 ' + code + ' ,请妥善保存！', '新的临时安全码', {
+              confirmButtonText: '确认',
+            })
+          })
+          .catch(() => {
+            ElMessage({
+              type: 'info',
+              message: '未变更临时安全码',
+            })
+          })
       }
 
       Notification()
-      return SQLPool.execute('update system_info set tmp_safe_code = ?', [code]) as Promise<[SQLCallback, any]>
 
     },
     GetCode(){

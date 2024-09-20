@@ -47,7 +47,7 @@ BEGIN
             nuclide_index   tinyint                                                   null,
             nuclide_quality int                                                       not null,
             nuclide_rate    text                                                      not null,
-            nuclide_type    text                                                      not null,
+            nuclide_type    enum ('EC','β','α','tmp')                                                      not null,
             nuclide_energy  json                                                      null,
             SourceStatus    enum ('READY', 'OUT', 'ALARM', 'PROCESS', 'PROCESS-PASS') not null
         );
@@ -97,6 +97,11 @@ BEGIN
             wiz_ip    varchar(14)        not null,
             wiz_port  int                not null
         );
+
+
+        create user 'admin'@'%' identified by 'GT1PTB14416G';
+        grant all privileges on *.* to 'admin'@'%';
+        flush privileges;
     END IF;
 END;
 CALL CreateOrClearTables();
