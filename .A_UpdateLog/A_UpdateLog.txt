@@ -3,3 +3,13 @@
 修改所有文件中全部moment中的hh为HH（12小时制改为24小时制），
 修改init-sql.sql中source_list初始化脚本使得nuclide_type可以为tmp以使添加放射源功能正常运行
 修改ApplySource.vue中add(h:time,m:time),删去m:time使得借出时间恰为所选择的小时数
+
+
+/*************************2024.9.20 17:18***************************/
+ProcessCard在第一次审核后将disable通过审核和拒绝审核按钮
+修改ProcessList.vue第25行raw后SSID为apply_id使得审核页面同一审核卡多次出现问题解决
+
+
+/*************************2024.9.22 15:11***************************/
+增加日程表功能
+将原page/DashBoard.vue中代码移至component/CalendarCard.vue中

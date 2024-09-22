@@ -1,70 +1,28 @@
 <template>
-  <v-card style="padding:40px;width:1200px;height:980px">
-    <v-card style="width:800px;height:900px;" elevation="0">
-      <perfect-scrollbar>
-        <FullCalendar :options="calendarOptions">
-        </FullCalendar>
-      </perfect-scrollbar>
-    </v-card>
-    <v-btn @click="AddEvent">添加事件</v-btn>
-  </v-card>
+  <CalendarCard :_-apply-list="Apply" :_-source-array="Source" ></CalendarCard>
 </template>
 
 <script setup lang="ts">
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import momentPlugin from '@fullcalendar/moment'
-import zhCnLocale from '@fullcalendar/core/locales/zh-cn'
-import { ref } from 'vue'
 
-const calendarOptions = ref({
-  plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, momentPlugin],
-  droppable: true,
-  height: 800,
-  titleFormat: 'MM-DD',
-  weekNumbers:false,
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: 'timeGridDay,timeGridWeek,dayGridMonth',
-  },
-  nowIndicator: true,
-  locale: zhCnLocale,
-  events: [] as any[],
-  views: {
-    dayGrid: {
-      displayEventTime:false,
-    },
-    timeGrid: {
-    },
-    week: {
-      displayEventTime:false,
-      displayEventEnd:false,
-      eventMaxStack:4
-    },
-    day: {
-      displayEventTime:true,
-      displayEventEnd:true,
-      eventMaxStack:6
-    }
-  }
+import { useUserProcessStore } from '../../store/useUserProcessStore'
+import { Ref, ref } from 'vue'
+import CalendarCard from '../../components/CalendarCard.vue'
+import { useSourceArrayStore } from '../../store/useSourceArrayStore'
+
+const Apply:Ref<any[]> = ref([])
+const Source:Ref<any[]> = ref([])
+
+useUserProcessStore().GetApply()
+useUserProcessStore().$subscribe((_arg,state)=>{
+  Apply.value = state.ApplyList
 })
 
-function AddEvent(){
-  calendarOptions.value.events.push(
-    {
-      title: 'The Title',
-      SSID: '8021',
-      start: '2024-03-07 15:30',
-      end: '2024-03-07 19:30',
-    }
-  )
-}
+useSourceArrayStore().UpdateSourceArray()
+useSourceArrayStore().$subscribe((_arg,state)=>{
+  Source.value = state.SourceArray
+})
 </script>
 
 <style scoped>
-.ps {
-  height: 900px;
-}
+
 </style>

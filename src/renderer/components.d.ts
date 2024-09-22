@@ -18,6 +18,7 @@ declare module 'vue' {
     AddSource_sources_list: typeof import('./src/components/AddSource/AddSource_sources_list.vue')['default']
     ApplySource: typeof import('./src/components/ApplySource.vue')['default']
     AuthorityWindows: typeof import('./src/components/Register/AuthorityWindows.vue')['default']
+    CalendarCard: typeof import('./src/components/CalendarCard.vue')['default']
     CardWindows: typeof import('./src/components/Register/CardWindows.vue')['default']
     CupBoard: typeof import('./src/components/cupBoard.vue')['default']
     CupBox: typeof import('./src/components/cupBox.vue')['default']

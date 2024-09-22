@@ -22,7 +22,7 @@
             <v-row dense >
               <v-col
                 v-for="apply_item in items"
-                :key="apply_item.raw.SSID"
+                :key="apply_item.raw.apply_id"
                 cols="2"
               >
                 <ProcessCard :apply_item="apply_item.raw"></ProcessCard>

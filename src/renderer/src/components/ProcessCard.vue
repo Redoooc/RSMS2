@@ -102,6 +102,15 @@
           点击确认
         </v-btn>
         <v-btn
+          v-else-if="apply_item.apply_status!='process'"
+          variant="outlined"
+          elevation="4"
+          color="green"
+          disabled
+        >
+          通过审核
+        </v-btn>
+        <v-btn
           v-else
           variant="outlined"
           elevation="4"
@@ -140,6 +149,15 @@
           @click="FORBID(apply_item.apply_id)"
         >
           点击确认
+        </v-btn>
+        <v-btn
+          v-else-if="apply_item.apply_status!='process'"
+          variant="outlined"
+          elevation="4"
+          color="red"
+          disabled
+        >
+          拒绝审核
         </v-btn>
         <v-btn
           v-else

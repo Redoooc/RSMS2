@@ -217,7 +217,7 @@ const cancel = () => {
   chooseItem.value = {} as SourcesArray
 }
 const saveSourceData = () => {
-  chooseItem.value.cupbox_id = DeviceArrayItem.value.find((item)=>{return item.value = String(chooseItem.value.device_id)})!.value2
+  chooseItem.value.cupbox_id = DeviceArrayItem.value.find((item)=>{return item.value = String(chooseItem.value.device_id)})!.value2 //无设备接入时，该行会报错，有设备接入时尚未测试
   saveLoading.value = true
   setTimeout(()=>{
     useManageStore().ChangeSource(chooseItem.value.SSID,chooseItem.value)
