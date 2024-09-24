@@ -107,7 +107,7 @@
           elevation="4"
           color="green"
           disabled
-        >
+        >  <!--审核一次之后禁用按键-->
           通过审核
         </v-btn>
         <v-btn
@@ -156,7 +156,7 @@
           elevation="4"
           color="red"
           disabled
-        >
+        >  <!--审核一次之后禁用按键-->
           拒绝审核
         </v-btn>
         <v-btn

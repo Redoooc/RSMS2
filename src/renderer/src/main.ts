@@ -14,6 +14,8 @@ import 'echarts'
 import { VCalendar } from 'vuetify/labs/VCalendar'
 import FullCalendar from '@fullcalendar/vue3'
 import VueStatusIndicator from './components/VueStatusIndicator/VueStatusIndicator.vue'
+import Gantt from '@xpyjs/gantt'
+import '@xpyjs/gantt/dist/style.css'
 
 // Composables
 import { createApp } from 'vue'
@@ -26,4 +28,5 @@ app.component('v-chart', EChart)
    .component('VCalendar', VCalendar)
    .component('FullCalendar', FullCalendar)
    .component('v-status', VueStatusIndicator)
+app.use(Gantt)
 app.mount('#app')

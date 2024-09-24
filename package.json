@@ -30,6 +30,7 @@
     "@fullcalendar/moment": "^6.1.11",
     "@fullcalendar/timegrid": "^6.1.11",
     "@mdi/font": "7.0.96",
+    "@xpyjs/gantt": "^2.1.13",
     "core-js": "^3.34.0",
     "echarts": "^5.4.3",
     "electron-edge-js": "github:cloudpsn1993/electron-edge-js",
