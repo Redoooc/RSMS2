@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref, Ref, watch } from 'vue'
-import { useCounterSQLStore } from '../../store/useCounterSQLStore'
+import { readCounterData, useCounterSQLStore } from '../../store/useCounterSQLStore'
 
 const data: Ref<any[]> = ref([])
 const CupBoxID = ref('')
@@ -153,7 +153,14 @@ function EchartsOption(data,type?:'CountRate'|'ADCPulse'){
 option.value = EchartsOption(data.value,'CountRate')
 const updateEcharts = ()=>{
   watch(CupBoxID,(_now,_pre)=>{
+    useCounterSQLStore().CupBoxCount.forEach((_obj) => {
+      if (_obj.ReadStatus == true) {
+        _obj.CountBuff.splice(0,_obj.CountBuff.length)
+        _obj.ReadStatus = false
+      }
+    })
     if(_now!=''){
+      readCounterData(useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value))
       option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value)].CountBuff,'CountRate')
       watch(()=>useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value)].CountBuff,()=>{
         option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value)].CountBuff,'CountRate')

@@ -34,7 +34,7 @@ export const useSourceArrayStore = defineStore('SourceArray', {
             const SourceBind = res[0][0] as unknown as SourceBind == undefined?{}:res[0][0] as unknown as SourceBind
             const allGet = Object.keys(SourceBind)
             allGet.forEach((key:string) => {
-              bindEmpty[key] = allGet[key]
+              bindEmpty[key] = SourceBind[key]
             })
             resolve (bindEmpty)
           })

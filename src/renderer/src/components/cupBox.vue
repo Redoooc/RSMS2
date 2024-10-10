@@ -168,7 +168,11 @@ import { useSchedulerStore } from '../store/useSchedulerStore'
 import { useBoardTCPStore } from '../store/useBoardTCPStore'
 import { useSystemSettingStore } from '../store/useSystemSettingStore'
 import VStatus from './VueStatusIndicator/VueStatusIndicator.vue'
-import { useCounterSQLStore } from '../store/useCounterSQLStore'
+import {
+  createFolder,
+  pushCounterData, readCounterData,
+  useCounterSQLStore
+} from '../store/useCounterSQLStore'
 
 const moment = require('moment')
 const Props = defineProps<{
@@ -263,7 +267,9 @@ const IntervalCount = (ip: string)=>{
         if (r != null && typeof r != 'string'&& typeof r[0] == 'number')
         {
           callback.value = r
-          useCounterSQLStore().CupBoxCount[CounterSQLID.value].CountBuff.push([moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1]])
+          //useCounterSQLStore().CupBoxCount[CounterSQLID.value].CountBuff.push([moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1]])
+          pushCounterData(CounterSQLID.value,moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1])
+          //readCounterData(CounterSQLID.value)
         }
       })
       if(bustSwitchCache[1]==0){
@@ -486,10 +492,14 @@ onMounted(()=>{
         if(useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==SourcesInfo.value.cupbox_id)==-1){
           useCounterSQLStore().CupBoxCount.push({
             CupBoxID:SourcesInfo.value.cupbox_id,
-            CountBuff:[]
+            CountBuff:[],
+            WriteCount:0,
+            ReadCount:0,
+            ReadStatus:false
           })
         }
         CounterSQLID.value=useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==SourcesInfo.value.cupbox_id)
+        createFolder()
         GetCount(now.wiz_ip)
       }
     },{once:true})
