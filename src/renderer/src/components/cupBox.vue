@@ -170,7 +170,7 @@ import { useSystemSettingStore } from '../store/useSystemSettingStore'
 import VStatus from './VueStatusIndicator/VueStatusIndicator.vue'
 import {
   createFolder,
-  pushCounterData, readCounterData,
+  pushCounterData,
   useCounterSQLStore
 } from '../store/useCounterSQLStore'
 
@@ -268,8 +268,7 @@ const IntervalCount = (ip: string)=>{
         {
           callback.value = r
           //useCounterSQLStore().CupBoxCount[CounterSQLID.value].CountBuff.push([moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1]])
-          pushCounterData(CounterSQLID.value,moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1])
-          //readCounterData(CounterSQLID.value)
+          pushCounterData(CounterSQLID.value,r[0],r[1])
         }
       })
       if(bustSwitchCache[1]==0){

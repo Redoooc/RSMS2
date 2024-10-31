@@ -123,7 +123,8 @@ function EchartsOption(data,type?:'CountRate'|'ADCPulse'){
           }
         ]
       }
-    }
+    },
+    animation: false
   }
   const ADCPulse = {
     xAxis: {
@@ -168,7 +169,6 @@ const updateEcharts = ()=>{
     }
   },{once:true})
 }
-
 
 </script>
 

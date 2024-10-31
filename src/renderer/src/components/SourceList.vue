@@ -7,29 +7,28 @@
                      :no-filter="filter">
       <template v-slot:header>
         <v-card class="px-2" style="height: 80px;padding-top: 20px" color="miniBG">
-          <v-row no-gutters>
-            <v-col cols="2">
+          <v-row column-gap="10px">
+            <v-col cols="auto">
               <v-text-field
                 v-model="search"
                 clearable
-                density="comfortable"
+                density="compact"
                 hide-details
                 placeholder="搜索"
                 label="搜索"
                 prepend-inner-icon="mdi-magnify"
-                style="max-width: 300px;"
+                style="width: 300px"
                 variant="outlined"
               ></v-text-field>
             </v-col>
-            <v-col cols="1">
+            <v-col cols="auto">
               <v-btn
-                class="mx-4"
                 variant="outlined"
                 @click="useAddSourceStore().OpenAddSource = true;useAddSourceStore().RefreshSSID()">
                 测试
               </v-btn>
             </v-col>
-            <v-col cols="2">
+            <v-col cols="auto">
               <el-cascader
                 v-model="fill_value"
                 :options="fill_options"
@@ -43,7 +42,7 @@
                 size="large"
               />
             </v-col>
-            <v-col cols="1">
+            <v-col cols="auto">
               <v-text-field
                 v-model="nuclide_rate_search_input_min"
                 :counter="10"
@@ -57,7 +56,7 @@
                 density="compact"
               ></v-text-field>
             </v-col>
-            <v-col cols="1">
+            <v-col cols="auto">
               <v-text-field
                 v-model="nuclide_rate_search_input_max"
                 :counter="10"
@@ -67,7 +66,6 @@
                 :error-messages="nuclide_rateFormatCheck(nuclide_rate_search_input_max)"
                 label="活度最大值"
                 style="width: 240px"
-                class="mx-10"
                 clearable
                 density="compact"
               ></v-text-field>

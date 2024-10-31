@@ -1,5 +1,5 @@
 <template>
-  <v-card style="padding:40px;width:1200px;height:980px">
+  <v-card style="padding:40px;width:880px;height:980px">
     <v-card style="width:800px;height:900px;" elevation="0">
       <perfect-scrollbar>
         <FullCalendar :options="calendarOptions" >
@@ -32,6 +32,7 @@ const calendarOptions = ref({
   height: 800,
   titleFormat: 'MM-DD',
   weekNumbers:false,
+  dayMaxEventRows: true,
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',

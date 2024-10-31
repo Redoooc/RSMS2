@@ -1,6 +1,6 @@
 <template>
-  <v-card style="padding:40px;width:1200px;height:980px">
-    <v-card style="width:1100px;height:900px;" elevation="0">
+  <v-card style="padding:40px;width:920px;height:980px">
+    <v-card style="width:840px;height:900px;" elevation="0">
       <perfect-scrollbar>
         <x-gantt :data="dataList"
                  locale="zh-cn"

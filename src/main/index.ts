@@ -144,8 +144,14 @@ function createWindow(): void {
     initWindow.loadFile(join(__dirname, '../renderer/index.html'),{hash:'Init'})
     // mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
-}
 
+  // mainWindow.on('resize', () => {
+  //   mainWindow.webContents.executeJavaScript(`
+  //       document.querySelector('body').style.zoom = ${mainWindow.getSize()[0] / 1920};
+  //     `)
+  // })
+
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

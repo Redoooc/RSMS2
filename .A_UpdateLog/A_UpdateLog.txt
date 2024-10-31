@@ -27,3 +27,14 @@ ProcessCard在第一次审核后将disable通过审核和拒绝审核按钮
 初步修改了源柜页面监视卡的数据存储方式，目前方式为每个探测器在外存中生成25个log文件数据包，每个数据包含有50条数据，按包循环删除更新
 后续修改方向，采用fs.creatReadStream和fs.creatWriteStream实现异步读写，从而使得单个探测器的数据只需存储在同一log文件中
 bug尚未测试，对于远超过10分钟的旧数据没有筛除能力，useCounterSQLStore中的CupBoxCount内的数据剔除有问题，疑似会造成先删除倒数第二旧的包中的数据
+
+/*************************2024.10.15 18:07**************************/
+通过useCounterSQLStore中readLine的rl.on('close')的异步功能，修复了读取数据包时顺序可能混乱，导致数据包循环覆盖时不按照时间覆盖
+向TmpEchart中的CountRate添加animation:false，通过禁用动画以修复循环覆盖数据时数据跳动的bug
+修改外部存储log文件中的时间为Unix时间戳
+通过加入setTimeout对useCounterSQLStore的readCounterData()中未创建24个文件时，读取状态由于读不到文件而无法结束的bug进行修复
+
+/*************************2024.10.26 18:01**************************/
+CalendarCard中添加dayMaxEventRows: true,使得单日日程过多时自动折叠
+修改了CalendarCard和TimelineCard的尺寸，在1920*1080分辨率下可以正常显示
+修改SourceList页顶部条中组件为col="auto"

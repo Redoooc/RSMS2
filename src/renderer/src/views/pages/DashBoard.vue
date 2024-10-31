@@ -1,9 +1,9 @@
 <template>
-  <v-row>
-    <v-col cols="6">
+  <v-row column-gap="10px">
+    <v-col cols="auto">
       <CalendarCard :_-apply-list="Apply" :_-source-array="Source" ></CalendarCard>
     </v-col>
-    <v-col cols="6">
+    <v-col cols="auto">
       <TimelineCard :_-apply-list="Apply" :_-source-array="Source" ></TimelineCard>
     </v-col>
   </v-row>
@@ -19,14 +19,17 @@ import { useSourceArrayStore } from '../../store/useSourceArrayStore'
 const Apply:Ref<any[]> = ref([])
 const Source:Ref<any[]> = ref([])
 
-useUserProcessStore().GetApply()
 useUserProcessStore().$subscribe((_arg,state)=>{
   Apply.value = state.ApplyList
 })
 
-useSourceArrayStore().UpdateSourceArray()
 useSourceArrayStore().$subscribe((_arg,state)=>{
   Source.value = state.SourceArray
+})
+
+onMounted(async () => {
+  await useUserProcessStore().GetApply()
+  await useSourceArrayStore().UpdateSourceArray()
 })
 </script>
 
