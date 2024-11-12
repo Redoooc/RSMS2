@@ -57,7 +57,8 @@ export const useSchedulerStore = defineStore('Scheduler', {
     queue0status: Array.from({ length: SchedulerMax }, () => false) as boolean[],
     queue0recorder: Array.from({ length: SchedulerMax }, () => 0) as number[],
     queue0cache: Array.from({ length: SchedulerMax }, () => null) as any[],
-    queue0enable: Array.from({ length: SchedulerMax }, () => false) as boolean[]
+    queue0enable: Array.from({ length: SchedulerMax }, () => false) as boolean[],
+    loopFlagForStart: false as boolean
   }),
   actions: {
     async add(FUNCTION:Function, Value: any, Option: OPTION):Promise<number[]|string|null> {
@@ -66,13 +67,7 @@ export const useSchedulerStore = defineStore('Scheduler', {
       if (executeID == -1) return "executeID ERROR"
       this.queue0count[executeID]++
       //复用器
-      if(this.queue0enable.findIndex(enable=>enable)!=-1) {
-        this.queue0enable[executeID] = true
-      }
-      else {
-        this.queue0enable[executeID] = true
-        this.start()
-      }
+      this.queue0enable[executeID]=true
       //阻塞器
       await new Promise(resolve => {
         Option.hasOwnProperty('seize') && Option.seize!.enabled ? this.queue0[executeID].splice(0,0,{ resolve: resolve, option: Option }):this.queue0[executeID].push({ resolve: resolve, option: Option })
@@ -83,11 +78,13 @@ export const useSchedulerStore = defineStore('Scheduler', {
       return await this.executeTask(FUNCTION, Value, executeID, Option)
     },
     async start() {
-      while (this.queue0enable.findIndex(enable=>enable)!=-1) {
-        if (Math.max(...this.queue0count)) {
-          for (let executeID = 0; executeID < 12; executeID++) {
-            if (this.queue0enable[executeID]) (!this.queue0status[executeID]) && this.queue0[executeID].length && (this.queue0[executeID].shift().resolve() || this.queue0count[executeID]--)
-            if (!this.queue0status[executeID] && this.queue0count[executeID]==0){this.queue0enable[executeID]=false}
+      while (this.loopFlagForStart) {
+        if (useSchedulerStore().queue0enable.findIndex(enable=>enable)!=-1) {
+          if (Math.max(...this.queue0count)) {
+            for (let executeID = 0; executeID < 12; executeID++) {
+              if (this.queue0enable[executeID]) (!this.queue0status[executeID]) && this.queue0[executeID].length && (this.queue0[executeID].shift().resolve() || this.queue0count[executeID]--)
+              if (!this.queue0status[executeID] && this.queue0count[executeID]==0){this.queue0enable[executeID]=false}
+            }
           }
         }
         await new Promise(resolve => setTimeout(resolve, useSystemSettingStore().SystemSetting['源柜通讯设置']['调度器最短扫描时间'].value))

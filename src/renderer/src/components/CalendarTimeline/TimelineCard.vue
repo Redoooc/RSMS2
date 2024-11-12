@@ -7,7 +7,7 @@
                  unit="hour"
                  primary-color="#2C3E50"
                  :header-style="HeaderStyle"
-                 row-height="40">   <!--使用的@xpyjs/gantt组件，见main.ts中的Gantt，参考文档https://xpyjs.github.io/gantt/docs/-->
+                 row-height="40">   <!--component:@xpyjs/gantt，Use as Gantt in main.ts，Reference:https://xpyjs.github.io/gantt/docs/-->
           <x-gantt-column prop="Sources" width="120" label="源"/>
           <x-gantt-slider prop="username"/>
         </x-gantt>
@@ -25,7 +25,7 @@ import { ApplyArray, SourcesArray } from '../../type'
 import { useUserDataStore } from '../../store/useUserDataStore'
 const moment = require('moment')
 
-const HeaderStyle = { textColor:'White' }  //修改时间线（甘特图）表头的文字颜色
+const HeaderStyle = { textColor:'White' }  //Change the text color of the timeline (Gantt chart) header
 
 const Prop = defineProps<{
   _ApplyList:ApplyArray[]
@@ -34,7 +34,7 @@ const Prop = defineProps<{
 
 const dataList:Ref<any[]> = ref([]);
 const YesterdayTime = moment().subtract({d:1}).format('YYYY-MM-DD HH:mm:ss')
-function AutoInputSourceData() {  //将source_list上的数据同步
+function AutoInputSourceData() {  //Synchronize the data on the source_list
   Prop._SourceArray.forEach((_SourceArray) => {
     if (_SourceArray.nuclide != 'tmp') {
       dataList.value.push({
@@ -47,17 +47,17 @@ function AutoInputSourceData() {  //将source_list上的数据同步
     }
   })
 }
-function AutoInputApplyData() {  //将apply_list上的数据同步，该函数如不与AutoInputSourceData()分别封装并在Template中分别调用，会出现重复添加source_list数据的情况，原因不明
+function AutoInputApplyData() {  //Synchronize the data on the apply_list，If this function is not encapsulated separately from AutoInputSourceData() and called separately in the <Template>, there will be a situation where the source_list data is added repeatedly, and the reason is unknown
   Prop._ApplyList.forEach((_ApplyList) => {
-    if (moment(_ApplyList.first_time).isAfter(YesterdayTime) && _ApplyList.apply_status == 'process-pass' && _ApplyList.event_status != 'back') {  //判断条件： 申请时间在过去的24小时内 且 申请通过 且 尚未归还
+    if (moment(_ApplyList.first_time).isAfter(YesterdayTime) && _ApplyList.apply_status == 'process-pass' && _ApplyList.event_status != 'back') {  //Judgment criteria: The application has been approved within the past 24 hours and has not been returned yet
       dataList.value.find((_dataList) => { return _dataList.SSID == _ApplyList.SSID }).startDate = _ApplyList.first_time
       dataList.value.find((_dataList) => { return _dataList.SSID == _ApplyList.SSID }).endDate = _ApplyList.last_time
     }
   })
 }
-function AutoInputUserDataForAdministrator(){  //在以管理员身份查看时间轴（甘特图）时，将apply_list中的user(用户账号)同步
+function AutoInputUserDataForAdministrator(){  //When viewing the timeline (Gantt chart) as an administrator, show the id number who borrow the source
   Prop._ApplyList.forEach((_ApplyList) => {
-    if (moment(_ApplyList.first_time).isAfter(YesterdayTime) && _ApplyList.apply_status == 'process-pass' && _ApplyList.event_status != 'back') {  //判断条件： 申请时间在过去的24小时内 且 申请通过 且 尚未归还
+    if (moment(_ApplyList.first_time).isAfter(YesterdayTime) && _ApplyList.apply_status == 'process-pass' && _ApplyList.event_status != 'back') {  //Judgment criteria: The application has been approved within the past 24 hours and has not been returned yet
       dataList.value.find((_dataList) => { return _dataList.SSID == _ApplyList.SSID }).username = _ApplyList.user
     }
   })

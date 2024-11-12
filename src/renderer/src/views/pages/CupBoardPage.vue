@@ -122,7 +122,7 @@
 <script lang="ts" setup>
 import CupBoard from "../../components/cupBoard.vue";
 import { CupBoardArray } from '../../type'
-import { onMounted, Ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, Ref, watch } from 'vue'
 import { useUserDataStore } from '../../store/useUserDataStore'
 import { useLotusCardDriverStore } from '../../store/useLotusCardDriverStore'
 import { useSystemInfoStore } from '../../store/useSystemInfoStore'
@@ -219,6 +219,12 @@ onMounted(()=>{
       if(now=='root') useSystemSettingStore().ShowLeftDrawer=true
     },{ once: true })
   }
+  useSchedulerStore().loopFlagForStart = true
+  useSchedulerStore().start()
+})
+
+onBeforeUnmount(()=>{
+  useSchedulerStore().loopFlagForStart = false
 })
 </script>
 

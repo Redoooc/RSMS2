@@ -38,3 +38,10 @@ bug尚未测试，对于远超过10分钟的旧数据没有筛除能力，useCou
 CalendarCard中添加dayMaxEventRows: true,使得单日日程过多时自动折叠
 修改了CalendarCard和TimelineCard的尺寸，在1920*1080分辨率下可以正常显示
 修改SourceList页顶部条中组件为col="auto"
+
+/*************************2024.11.12 17:18**************************/
+修改调度器中的start部分避免while循环多次启动造成调度器故障（其调用和互斥量更改在cupBoardPage.vue中进行）
+为tmpEchart的updateEcharts()函数增加互斥量避免数据多次加载
+修改BoardTCPHandle4.8.dll，增加Socket[index].IpAddress返回避免数据传输到错误的柜中（判断c#中的ip和本软件中的ip在Cupbox.vue的FUNCTION函数中进行）
+修改pushCounterData()使其在未成功创建或重置log文件时直接跳出避免出现未能覆盖旧数据的情况
+修改了部分中文注释为英文

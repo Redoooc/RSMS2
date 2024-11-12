@@ -41,6 +41,7 @@
                 style="width: 240px;"
                 size="large"
               />
+              <AutoPushDataTofill_option/>
             </v-col>
             <v-col cols="auto">
               <v-text-field
@@ -140,11 +141,11 @@ const filter_buffer:Ref<SourcesFilterBufferArray> = ref({
   SourceStatus: [],
 })
 
-//**********************输入活度范围筛选功能**************************//
+//function of filtering through inputting nuclide_rate range//
 const nuclide_rate_search_input_min:Ref<string> = ref('')
 const nuclide_rate_search_input_max:Ref<string> = ref('')
 
-const nuclide_rateFormatCheck = (value: any)=> {  //*************活度范围输入格式审查函数
+const nuclide_rateFormatCheck = (value: any)=> {  //check the input format
   if (value?.length >= 1 && /[0-9]+(.[0-9]+)?E[0-9]+/.test(value)) return null
   else if (value == '') return null
   else if (value == null) return null
@@ -167,9 +168,9 @@ watch(nuclide_rate_search_input_min,()=>{
 watch(nuclide_rate_search_input_max,()=>{
   nuclide_rateSearchPush()
 })
-//**********************输入活度范围筛选功能结尾**************************//
+//end of filtering through inputting nuclide_rate range//
 
-defineProps<{
+const props = defineProps<{
   sources: SourcesArray[]
 }>()
 
@@ -182,7 +183,7 @@ const customFilter = (_value: string, _query: string, _item?: any)=>{
     const filter_key_length = filter_key[i][1].length
     if(filter_key_length>0){
       let Correct_else = 0
-      if (filter_key[i][0] == 'nuclide_rate') { //放射性活度筛选
+      if (filter_key[i][0] == 'nuclide_rate') { //filter through nuclide_rate
         for (let j = 0; j < filter_key_length; j++) {
           if (parseFloat(_item.raw[filter_key[i][0]]) >= filter_key[i][1][j][0] && parseFloat(_item.raw[filter_key[i][0]]) <= filter_key[i][1][j][1]) {
             Correct_else += 1
@@ -190,7 +191,7 @@ const customFilter = (_value: string, _query: string, _item?: any)=>{
             Correct_else += 0
           }
         }
-      } else { //其他筛选
+      } else { //filter through other property
         for (let j = 0; j < filter_key_length; j++) {
           if (typeof _item.raw[filter_key[i][0]] == typeof filter_key[i][1][j] && _item.raw[filter_key[i][0]] == filter_key[i][1][j]) {
             Correct_else += 1
@@ -225,7 +226,7 @@ const fill_handleChange = (_value) => {
    //console.log(_value)
 }
 
-const fill_options = [
+const fill_options = ref([
   {
     value: 'nuclide_quality',
     label: '质量',
@@ -242,7 +243,7 @@ const fill_options = [
   },
   {
     value: 'nuclide_type',
-    label: '类型',
+    label: '衰变类型',
     children: [
       {
         value: 'EC',
@@ -258,36 +259,50 @@ const fill_options = [
       },
     ],
   },
-  //*********************通过筛选框对活度进行筛选****************************//
-  // {
-  //   value: 'nuclide_rate',
-  //   label: '放射性活度',
-  //   children: [
-  //     {
-  //       value: [1,10000000],
-  //       label: '1~1E7',
-  //     },
-  //     {
-  //       value: [10000000,1000000000],
-  //       label: '1E7~1E9',
-  //     }
-  //   ]
-  // }
-]
+  {
+    value: 'nuclide_name',
+    label: '名称',
+    children: []
+  },
+  {
+    value: 'SourceStatus',
+    label: '状态',
+    children: [
+      {
+        value: 'READY',
+        label: '在库',
+      },
+      {
+        value: 'OUT',
+        label: '借出',
+      },
+      {
+        value: 'PROCESS',
+        label: '审核',
+      },
+      {
+        value: 'PROCESS-PASS',
+        label: '待取',
+      },
+      {
+        value: 'ALARM',
+        label: '异常',
+      },
+    ]
+  }
+])
+
+function AutoPushDataTofill_option() {
+  props.sources.forEach((item,_index)=>{
+    fill_options.value.find((options) => {options.value=='nuclide_name'})?.children.push({
+      value: item.nuclide_name,
+      label: item.nuclide_name,
+    } as never,)
+  })
+  console.log(fill_options)
+}
 
 watch(fill_value,(now,_pre)=>{
-  //*********************通过筛选框对活度进行筛选*************************//
-  // filter_buffer.value = {
-  //   nuclide_index:[],
-  //   nuclide: [],
-  //   nuclide_name: [],
-  //   nuclide_quality: [],
-  //   nuclide_rate: [],
-  //   nuclide_type: [],
-  //   SSID: [],
-  //   SourceStatus: [],
-  // }
-  //*********************通过输入值对活度进行筛选*************************//
   filter_buffer.value.nuclide_index = []
   filter_buffer.value.nuclide = []
   filter_buffer.value.nuclide_name = []

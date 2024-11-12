@@ -201,7 +201,7 @@ const Color:{ [KEY:string]: string} = {
   'PROCESS-PASS': '#00B0FF',
   'OUT': '#546E7A',
 }
-const callback:Ref<number[]> = ref([0,0])
+const callback:Ref<number[]> = ref([0,0,0])
 const Scheduler = useSchedulerStore()
 const IntervalID:Ref<NodeJS.Timeout|null> = ref(null)
 const monitorIntervalID:Ref<NodeJS.Timeout|null> = ref(null)
@@ -209,6 +209,7 @@ const CounterSQLID = ref(-1)
 const ChannelStatus = ref('none')
 const bustSwitchCache = ref([0,0])
 const busyTimes  = Math.round(((useSystemSettingStore().SystemSetting['源柜通讯设置']['调度器队列累计下限'].value)*(useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value))/useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value) + 2*(useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value)/useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value
+let resTemp = ref(0)
 
 const ChannelStatusType = (ChannelStatus)=>{
   switch(ChannelStatus){
@@ -235,7 +236,9 @@ const Function = async (Value: any, ID: number) => {
           for (let tick = 0; tick < 200; tick++) {
             if (typeof res != 'string' && res != null) {
               // console.log("already wait at " + tick as unknown as string)
-              return res
+              if (typeof res[2] == 'string' && res[2] == Value.ip) {
+                return res.splice(0,2)
+              }
             } else {
               await new Promise(resolve => setTimeout(resolve, 10))
             }
@@ -251,40 +254,46 @@ const Function = async (Value: any, ID: number) => {
     }
   })
 }
+
+const OnceCount = (ip: string)=>{
+  if(typeof callback.value[0]=='number'){
+    const res = Scheduler.add(
+      Function,
+      {
+        ip: ip,
+        port: 5000
+      },
+      {
+        delay: 0
+      })
+    res.then((r) => {
+      if (r != null && typeof r != 'string'&& typeof r[0] == 'number' && r[0] != 0)
+      {
+        callback.value = r
+        callback.value[2] = moment().unix()
+        if (r[0] != resTemp.value) {pushCounterData(CounterSQLID.value,r[0],r[1])}
+        resTemp.value = r[0]
+      }
+    })
+    if(bustSwitchCache[1]==0){
+      bustSwitchCache[0] = callback[0]
+      bustSwitchCache[1] ++
+    }
+    else if(bustSwitchCache[1]>=busyTimes){
+      ChannelStatus.value = bustSwitchCache[0]==callback[0]?'busy':ChannelStatus.value
+      bustSwitchCache[1] = 0
+    }else {
+      bustSwitchCache[1] ++
+    }
+  }
+  else {
+    callback.value = [0,0]
+  }
+}
+
 const IntervalCount = (ip: string)=>{
   IntervalID.value = setInterval(()=>{
-    if(typeof callback.value[0]=='number'){
-      const res = Scheduler.add(
-        Function,
-        {
-          ip: ip,
-          port: 5000
-        },
-        {
-          delay: 0
-        })
-      res.then((r) => {
-        if (r != null && typeof r != 'string'&& typeof r[0] == 'number')
-        {
-          callback.value = r
-          //useCounterSQLStore().CupBoxCount[CounterSQLID.value].CountBuff.push([moment.unix(r[0]).format('YYYY-MM-DD HH:mm:ss'),r[1]])
-          pushCounterData(CounterSQLID.value,r[0],r[1])
-        }
-      })
-      if(bustSwitchCache[1]==0){
-        bustSwitchCache[0] = callback[0]
-        bustSwitchCache[1] ++
-      }
-      else if(bustSwitchCache[1]>=busyTimes){
-        ChannelStatus.value = bustSwitchCache[0]==callback[0]?'busy':ChannelStatus.value
-        bustSwitchCache[1] = 0
-      }else {
-        bustSwitchCache[1] ++
-      }
-    }
-    else {
-      callback.value = [0,0]
-    }
+    OnceCount(ip)
   },useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value as number)
 }
 
@@ -457,11 +466,13 @@ function BackOpenBox(apply_id:string,SSID:string){
 const GetCount = async (ip: string) => {
   IntervalCount(ip)
   monitorIntervalID.value = setInterval(()=>{
-    if(callback.value[0]==0 && IntervalID.value!=null){
+    if((callback.value[0]==0 && IntervalID.value!=null) || ((callback.value[2] < moment().unix()-useSystemSettingStore().SystemSetting['源柜通讯设置']['探测器连接超时检测时间'].value && IntervalID.value!=null))){
       clearInterval(IntervalID.value)
       IntervalID.value = null
+      callback.value[0]=0
+      ChannelStatus.value='none'
     }
-    else if(IntervalID.value==null){
+    else if(callback.value[0]==0 && IntervalID.value==null){
       IntervalCount(ip)
     }
   },Math.random()*5000 + 5000)
@@ -493,7 +504,6 @@ onMounted(()=>{
             CupBoxID:SourcesInfo.value.cupbox_id,
             CountBuff:[],
             WriteCount:0,
-            ReadCount:0,
             ReadStatus:false
           })
         }

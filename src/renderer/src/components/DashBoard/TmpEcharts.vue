@@ -152,22 +152,28 @@ function EchartsOption(data,type?:'CountRate'|'ADCPulse'){
 }
 
 option.value = EchartsOption(data.value,'CountRate')
+
+let updateEchartsFlag = false
 const updateEcharts = ()=>{
-  watch(CupBoxID,(_now,_pre)=>{
-    useCounterSQLStore().CupBoxCount.forEach((_obj) => {
-      if (_obj.ReadStatus == true) {
-        _obj.CountBuff.splice(0,_obj.CountBuff.length)
-        _obj.ReadStatus = false
-      }
-    })
-    if(_now!=''){
-      readCounterData(useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value))
-      option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value)].CountBuff,'CountRate')
-      watch(()=>useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value)].CountBuff,()=>{
-        option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==CupBoxID.value)].CountBuff,'CountRate')
+  if (!updateEchartsFlag) {
+    updateEchartsFlag = true
+    watch(CupBoxID, (_now, _pre) => {
+      useCounterSQLStore().CupBoxCount.forEach((_obj) => {
+        if (_obj.ReadStatus == true) {
+          _obj.CountBuff.splice(0, _obj.CountBuff.length)
+          _obj.ReadStatus = false
+        }
       })
-    }
-  },{once:true})
+      if (_now != '') {
+        readCounterData(useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value))
+        option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value)].CountBuff, 'CountRate')
+        watch(() => useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value)].CountBuff, () => {
+          option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value)].CountBuff, 'CountRate')
+        })
+      }
+      updateEchartsFlag = false
+    }, { once: true })
+  }
 }
 
 </script>

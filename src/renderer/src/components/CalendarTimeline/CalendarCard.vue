@@ -70,11 +70,11 @@ function AddEvent(){
     }
   )
 }
-function AutoAddEvent(){  //自动同步审核通过的源至日程表
+function AutoAddEvent(){  //Automatically synchronize approved apply to the applicant's calendar
   Prop._ApplyList.forEach((_ApplyList)=>{
-    if (_ApplyList.user==useUserDataStore().UserData.user && _ApplyList.apply_status=='process-pass') {  //筛选当前登录用户已通过的审核
+    if (_ApplyList.user==useUserDataStore().UserData.user && _ApplyList.apply_status=='process-pass') {  //Filter the currently logged-in user's approved apply
       Prop._SourceArray.forEach((_SourceArray)=> {
-        if (_SourceArray.SSID == _ApplyList.SSID) {  //寻找审核通过的SSID号对应的源
+        if (_SourceArray.SSID == _ApplyList.SSID) {  //Find the source corresponding to the SSID number of approved apply
           calendarOptions.value.events.push(
             {
               title: _SourceArray.nuclide_name+_SourceArray.nuclide_quality+' No.'+_SourceArray.nuclide_id,
@@ -89,10 +89,10 @@ function AutoAddEvent(){  //自动同步审核通过的源至日程表
   })
 }
 
-//***************************在日程表页面发生账户登录登出时进行日程表切换****************************//
-watch(useUserDataStore(),()=>{  //监视用户状态
-  calendarOptions.value.events.splice(0,calendarOptions.value.events.length)  //在账户登录与登出时对日程表进行清空
-  if(useUserDataStore().UserStatus=="Login"){ AutoAddEvent() }  //在账户登录时添加日程表
+//Switch calendar when account login or logout occurs on the calendar page(dashboard.vue)//
+watch(useUserDataStore(),()=>{  //Monitor user status(login & logout)
+  calendarOptions.value.events.splice(0,calendarOptions.value.events.length)  //Clear the calendar when account login and logout
+  if(useUserDataStore().UserStatus=="Login"){ AutoAddEvent() }  //synchronize approved apply when account login
 })
 </script>
 
