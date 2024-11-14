@@ -43,5 +43,8 @@ CalendarCard中添加dayMaxEventRows: true,使得单日日程过多时自动折�
 修改调度器中的start部分避免while循环多次启动造成调度器故障（其调用和互斥量更改在cupBoardPage.vue中进行）
 为tmpEchart的updateEcharts()函数增加互斥量避免数据多次加载
 修改BoardTCPHandle4.8.dll，增加Socket[index].IpAddress返回避免数据传输到错误的柜中（判断c#中的ip和本软件中的ip在Cupbox.vue的FUNCTION函数中进行）
-修改pushCounterData()使其在未成功创建或重置log文件时直接跳出避免出现未能覆盖旧数据的情况
 修改了部分中文注释为英文
+
+/*************************2024.11.14 16:54**************************/
+为cupBox.vue中OnceCount()中执行pushCounterData()时添加了调度器，以避免偶尔存在的并发行为造成覆盖旧log文件被跳过
+为SourceList.vue中筛选功能添加了从数据库的nuclide_name,nuclide_quality中自动提取并添加筛选条件的功能

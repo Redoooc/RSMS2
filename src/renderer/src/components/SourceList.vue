@@ -28,6 +28,7 @@
                 测试
               </v-btn>
             </v-col>
+            <AutoPushDataTofill_option/>
             <v-col cols="auto">
               <el-cascader
                 v-model="fill_value"
@@ -41,7 +42,6 @@
                 style="width: 240px;"
                 size="large"
               />
-              <AutoPushDataTofill_option/>
             </v-col>
             <v-col cols="auto">
               <v-text-field
@@ -226,20 +226,11 @@ const fill_handleChange = (_value) => {
    //console.log(_value)
 }
 
-const fill_options = ref([
+const fill_options : Ref<any[]> = ref([
   {
     value: 'nuclide_quality',
     label: '质量',
-    children: [
-      {
-        value: 60,
-        label: '60',
-      },
-      {
-        value: 137,
-        label: '137',
-      },
-    ],
+    children: [],
   },
   {
     value: 'nuclide_type',
@@ -293,13 +284,19 @@ const fill_options = ref([
 ])
 
 function AutoPushDataTofill_option() {
-  props.sources.forEach((item,_index)=>{
-    fill_options.value.find((options) => {options.value=='nuclide_name'})?.children.push({
-      value: item.nuclide_name,
-      label: item.nuclide_name,
-    } as never,)
+  const optionsNeedAutoPush = ['nuclide_name','nuclide_quality']
+  optionsNeedAutoPush.forEach((item1,_index)=>{
+    const uniqueOptions = new Set()
+    props.sources.forEach((item2,_index)=>{
+      uniqueOptions.add(item2[item1])
+    })
+    uniqueOptions.forEach((item3,_index)=>{
+      fill_options.value.find(options => options.value==item1).children.push({
+        value: item3,
+        label: item3,
+      },)
+    })
   })
-  console.log(fill_options)
 }
 
 watch(fill_value,(now,_pre)=>{

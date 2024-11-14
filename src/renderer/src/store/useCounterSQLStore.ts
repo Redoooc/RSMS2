@@ -34,14 +34,7 @@ export async function pushCounterData(counterSqlId:number, momentUnix:number, co
   try {
     const dataArrayToString = JSON.stringify([momentUnix, counterData])  //将传入数据转化为字符串以便于写入.log文件中
     const filepath = './CounterData/Data' + useCounterSQLStore().CupBoxCount[counterSqlId].CupBoxID + '_' + Math.floor(useCounterSQLStore().CupBoxCount[counterSqlId].WriteCount / 50) + '.log'  //生成文件名：Data+箱号+下划线+数据包序号（0-24）.log
-    if (Number.isInteger((useCounterSQLStore().CupBoxCount[counterSqlId].WriteCount / 50))) {
-      try {
-        await writeFile(filepath, '', 'utf8')
-      } catch (err) {
-        console.error('Error create DataLogFile:', err)
-        return undefined
-      }
-    }  //在上个包中填满50条数据后，创建或覆盖下一个包以准备接受数据，如果创建失败则跳出函数
+    if (Number.isInteger((useCounterSQLStore().CupBoxCount[counterSqlId].WriteCount / 50))) {await writeFile(filepath, '', 'utf8')}  //在上个包中填满50条数据后，创建或覆盖下一个包以准备接受数据，如果创建失败则跳出函数
     await fs.promises.appendFile(filepath, dataArrayToString + '\n')  //传入数据
     useCounterSQLStore().CupBoxCount[counterSqlId].WriteCount++  //循环计数变量CycleCount自增
     if (useCounterSQLStore().CupBoxCount[counterSqlId].WriteCount == 1250) {useCounterSQLStore().CupBoxCount[counterSqlId].WriteCount = 0}  //计满1250条数据后循环计数变量清零，从0号log文件开始重新计数
@@ -68,17 +61,10 @@ export async function readCounterData(counterSqlId:number) {
   } catch (err:any) {
     if (err.code === 'ENOENT') { //haven't founded 25 CounterDatafiles
       for (let cnt = 0; cnt < 25; cnt++) {
-        try {
-          await fs.promises.stat('./CounterData/Data' + useCounterSQLStore().CupBoxCount[counterSqlId].CupBoxID + '_' + cnt + '.log')
-          const readStream = fs.createReadStream('./CounterData/Data' + useCounterSQLStore().CupBoxCount[counterSqlId].CupBoxID + '_' + cnt + '.log')
-          await readLine(readStream, counterSqlId)
-        } catch (err:any) {
-         if (err.code === 'ENOENT') {
-           useCounterSQLStore().CupBoxCount[counterSqlId].ReadStatus = true
-         }
-         else {
-           console.error('Error reading counter data without 24 files:', err)
-         }
+        const readStream = fs.createReadStream('./CounterData/Data' + useCounterSQLStore().CupBoxCount[counterSqlId].CupBoxID + '_' + cnt + '.log')
+        if (await readLine(readStream, counterSqlId) == 'ENOENT') {
+          useCounterSQLStore().CupBoxCount[counterSqlId].ReadStatus = true
+          break
         }
       }
     } else {
@@ -97,6 +83,15 @@ async function readLine(readStream:any,counterSqlId:number) {
   return new Promise((resolve)=>{
     rl.on('close', () => {
       resolve(undefined)
+    })
+    rl.on('error',(err)=>{
+      if (err.code === 'ENOENT') {
+        console.warn('ENOENT in readline:', err)
+        resolve('ENOENT')
+      }
+      else {
+        console.error('Error in readline:', err)
+      }
     })
   })
 }

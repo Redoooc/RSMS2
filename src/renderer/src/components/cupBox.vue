@@ -209,6 +209,7 @@ const CounterSQLID = ref(-1)
 const ChannelStatus = ref('none')
 const bustSwitchCache = ref([0,0])
 const busyTimes  = Math.round(((useSystemSettingStore().SystemSetting['源柜通讯设置']['调度器队列累计下限'].value)*(useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value))/useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value) + 2*(useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value)/useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value
+const pushQueue : Ref<any[]> = ref([]) //queue of blocker
 let resTemp = ref(0)
 
 const ChannelStatusType = (ChannelStatus)=>{
@@ -266,13 +267,22 @@ const OnceCount = (ip: string)=>{
       {
         delay: 0
       })
-    res.then((r) => {
-      if (r != null && typeof r != 'string'&& typeof r[0] == 'number' && r[0] != 0)
-      {
+    res.then(async (r) => {
+      if (r != null && typeof r != 'string' && typeof r[0] == 'number' && r[0] != 0) {
         callback.value = r
         callback.value[2] = moment().unix()
-        if (r[0] != resTemp.value) {pushCounterData(CounterSQLID.value,r[0],r[1])}
-        resTemp.value = r[0]
+        if (r[0] != resTemp.value) { //1 data per second
+          resTemp.value = r[0]
+          if (pushQueue.value.length != 0) { //Blocker, used to deal with occasional concurrent situations
+            await new Promise(resolve => {
+              pushQueue.value.splice(pushQueue.value.length - 1, 0, { resolve: resolve })
+            })
+          } else {
+            pushQueue.value.push({ resolve: () => {} }) //empty function
+          }
+          await pushCounterData(CounterSQLID.value, r[0], r[1])
+          pushQueue.value.shift().resolve()
+        }
       }
     })
     if(bustSwitchCache[1]==0){
