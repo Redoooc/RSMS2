@@ -168,11 +168,7 @@ import { useSchedulerStore } from '../store/useSchedulerStore'
 import { useBoardTCPStore } from '../store/useBoardTCPStore'
 import { useSystemSettingStore } from '../store/useSystemSettingStore'
 import VStatus from './VueStatusIndicator/VueStatusIndicator.vue'
-import {
-  createFolder,
-  pushCounterData,
-  useCounterSQLStore
-} from '../store/useCounterSQLStore'
+import { useCounterSQLStore } from '../store/useCounterSQLStore'
 
 const moment = require('moment')
 const Props = defineProps<{
@@ -280,7 +276,7 @@ const OnceCount = (ip: string)=>{
           } else {
             pushQueue.value.push({ resolve: () => {} }) //empty function
           }
-          await pushCounterData(CounterSQLID.value, r[0], r[1])
+          await useCounterSQLStore().pushCounterData(CounterSQLID.value, r[0], r[1])
           pushQueue.value.shift().resolve()
         }
       }
@@ -518,7 +514,7 @@ onMounted(()=>{
           })
         }
         CounterSQLID.value=useCounterSQLStore().CupBoxCount.findIndex((item)=>item.CupBoxID==SourcesInfo.value.cupbox_id)
-        createFolder()
+        useCounterSQLStore().createFolder()
         GetCount(now.wiz_ip)
       }
     },{once:true})

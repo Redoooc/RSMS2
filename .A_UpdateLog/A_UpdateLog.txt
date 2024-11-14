@@ -48,3 +48,5 @@ CalendarCard中添加dayMaxEventRows: true,使得单日日程过多时自动折�
 /*************************2024.11.14 16:54**************************/
 为cupBox.vue中OnceCount()中执行pushCounterData()时添加了调度器，以避免偶尔存在的并发行为造成覆盖旧log文件被跳过
 为SourceList.vue中筛选功能添加了从数据库的nuclide_name,nuclide_quality中自动提取并添加筛选条件的功能
+useCounterSQLStore.ts重构完成，支持修改数据包个数和数据包内数据量
+修改useSystemSettingStore.ts,增加updateNumber使得客户端可以向SystemSetting.json中写入数字而不以字符串形式保存

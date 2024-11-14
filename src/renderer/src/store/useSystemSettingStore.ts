@@ -49,6 +49,9 @@ export const useSystemSettingStore = defineStore('SystemSetting', {
     updateText(key, subKey,event) {
       this.SystemSetting[key][subKey]['value'] = event.target.value
     },
+    updateNumber(key, subKey,event) {
+      this.SystemSetting[key][subKey]['value'] = parseInt(event.target.value)
+    },
     updateSQLText(key, event) {
       this.MySQL.SQL[key] = event.target.value
     }

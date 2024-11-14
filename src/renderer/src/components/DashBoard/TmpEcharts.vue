@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ref, Ref, watch } from 'vue'
-import { readCounterData, useCounterSQLStore } from '../../store/useCounterSQLStore'
+import { useCounterSQLStore } from '../../store/useCounterSQLStore'
 
 const data: Ref<any[]> = ref([])
 const CupBoxID = ref('')
@@ -165,7 +165,7 @@ const updateEcharts = ()=>{
         }
       })
       if (_now != '') {
-        readCounterData(useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value))
+        useCounterSQLStore().readCounterData(useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value))
         option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value)].CountBuff, 'CountRate')
         watch(() => useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value)].CountBuff, () => {
           option.value = EchartsOption(useCounterSQLStore().CupBoxCount[useCounterSQLStore().CupBoxCount.findIndex((item) => item.CupBoxID == CupBoxID.value)].CountBuff, 'CountRate')

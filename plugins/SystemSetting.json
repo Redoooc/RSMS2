@@ -157,5 +157,25 @@
    "tips": "~cps",
    "value": "10000"
   }
+ },
+ "探测器计数存储设置": {
+  "title": {
+   "title": "探测器计数存储设置",
+   "type": "title",
+   "tips": "",
+   "value": true
+  },
+  "数据包个数": {
+   "title": "",
+   "type": "number",
+   "tips": "~个",
+   "value": 25
+  },
+  "数据包存储量": {
+   "title": "",
+   "type": "number",
+   "tips": "~条",
+   "value": 50
+  }
  }
 }

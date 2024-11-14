@@ -200,6 +200,15 @@
                           @change="useSystemSettingStore().updateText(key, subKey, $event)"
                         ></v-text-field>
                       </v-list-item>
+                      <v-list-item v-if="subValue['type']==='number'" density="compact">
+                        <v-text-field
+                          style="width: 100px;text-align:right;"
+                          :model-value="subValue['value']"
+                          hide-details="auto"
+                          variant="outlined"
+                          @change="useSystemSettingStore().updateNumber(key, subKey, $event)"
+                        ></v-text-field>
+                      </v-list-item>
                     </div>
                   </v-col>
                 </v-row>
