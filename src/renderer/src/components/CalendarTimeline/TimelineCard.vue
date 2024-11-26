@@ -14,7 +14,6 @@
       </perfect-scrollbar>
       <AutoInputSourceData/>
       <AutoInputApplyData/>
-      <AutoInputUserDataForAdministrator v-if="useUserDataStore().UserData.authority=='root'"/>
     </v-card>
   </v-card>
 </template>
@@ -54,6 +53,9 @@ function AutoInputApplyData() {  //Synchronize the data on the apply_list，If t
       dataList.value.find((_dataList) => { return _dataList.SSID == _ApplyList.SSID }).endDate = _ApplyList.last_time
     }
   })
+  if (useUserDataStore().UserData.authority=="root") {
+    AutoInputUserDataForAdministrator()
+  }
 }
 function AutoInputUserDataForAdministrator(){  //When viewing the timeline (Gantt chart) as an administrator, show the id number who borrow the source
   Prop._ApplyList.forEach((_ApplyList) => {

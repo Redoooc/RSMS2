@@ -157,15 +157,16 @@ const nuclide_rateSearchPush = ()=> {
    && nuclide_rate_search_input_max.value != '' && nuclide_rateFormatCheck(nuclide_rate_search_input_max.value) == null
    && parseFloat(nuclide_rate_search_input_min.value) < parseFloat(nuclide_rate_search_input_max.value))
   {
-    filter_buffer.value.nuclide_rate = []
     filter_buffer.value['nuclide_rate'].push([nuclide_rate_search_input_min.value,nuclide_rate_search_input_max.value] as never)
   }
 }
 
 watch(nuclide_rate_search_input_min,()=>{
+  filter_buffer.value.nuclide_rate = []
   nuclide_rateSearchPush()
 })
 watch(nuclide_rate_search_input_max,()=>{
+  filter_buffer.value.nuclide_rate = []
   nuclide_rateSearchPush()
 })
 //end of filtering through inputting nuclide_rate range//
@@ -230,7 +231,7 @@ const fill_options : Ref<any[]> = ref([
   {
     value: 'nuclide_quality',
     label: '质量',
-    children: [],
+    children: []
   },
   {
     value: 'nuclide_type',
@@ -248,7 +249,7 @@ const fill_options : Ref<any[]> = ref([
         value:'β',
         label: 'β',
       },
-    ],
+    ]
   },
   {
     value: 'nuclide_name',
@@ -286,6 +287,7 @@ const fill_options : Ref<any[]> = ref([
 function AutoPushDataTofill_option() {
   const optionsNeedAutoPush = ['nuclide_name','nuclide_quality']
   optionsNeedAutoPush.forEach((item1,_index)=>{
+    fill_options.value.find(options => options.value==item1).children = []
     const uniqueOptions = new Set()
     props.sources.forEach((item2,_index)=>{
       uniqueOptions.add(item2[item1])

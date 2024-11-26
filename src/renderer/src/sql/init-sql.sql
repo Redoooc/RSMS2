@@ -84,7 +84,7 @@ BEGIN
             back_time    datetime                                           null,
             reason       text                                               null,
             apply_status enum ('process', 'process-pass', 'process-forbid') not null,
-            event_status enum ('wait','out', 'normal' , 'back')             null,
+            event_status enum ('wait' , 'out', 'normal' , 'back' , 'not-taken')             null,
             user_status  enum ('overdue', 'normal')                         not null,
             item_status  enum ('end' , 'run')                               not null
         );
@@ -114,16 +114,29 @@ CREATE TRIGGER if not exists after_Update_apply_list_change_sources_list_Sources
 BEGIN
     DECLARE new_SourceStatus enum ('READY', 'OUT', 'ALARM', 'PROCESS', 'PROCESS-PASS');
 
-    CASE NEW.apply_status
-        WHEN 'process' THEN SET new_SourceStatus = 'PROCESS';
-        WHEN 'process-pass' THEN SET new_SourceStatus = 'PROCESS-PASS';
-        WHEN 'process-forbid' THEN SET new_SourceStatus = 'READY';
-        ELSE SET new_SourceStatus = NULL;
-        END CASE;
+    IF NEW.apply_status != OLD.apply_status THEN
+        CASE NEW.apply_status
+            WHEN 'process' THEN SET new_SourceStatus = 'PROCESS';
+            WHEN 'process-pass' THEN SET new_SourceStatus = 'PROCESS-PASS';
+            WHEN 'process-forbid' THEN SET new_SourceStatus = 'READY';
+            ELSE SET new_SourceStatus = NULL;
+            END CASE;
 
-    IF new_SourceStatus IS NOT NULL AND NEW.item_status != 'end' THEN
-        UPDATE sources_list
-        SET SourceStatus = new_SourceStatus
-        WHERE SSID = NEW.SSID;
+        IF new_SourceStatus IS NOT NULL AND NEW.item_status != 'end' THEN
+            UPDATE sources_list
+            SET SourceStatus = new_SourceStatus
+            WHERE SSID = NEW.SSID;
+        END IF;
     END IF;
+END;
+
+SET GLOBAL event_scheduler = ON;
+CREATE EVENT if not exists update_apply_list_event_status
+ON SCHEDULE EVERY 1 MINUTE
+DO
+BEGIN
+    UPDATE apply_list al, sources_list sl
+        SET al.event_status = 'not-taken' , al.item_status = 'end' , sl.SourceStatus = 'READY' WHERE al.last_time < SYSDATE() AND al.apply_status = 'process-pass' AND al.event_status = 'wait' AND al.SSID = sl.SSID;
+    UPDATE apply_list
+        SET user_status = 'overdue' WHERE last_time < SYSDATE() AND event_status = 'out';
 END;

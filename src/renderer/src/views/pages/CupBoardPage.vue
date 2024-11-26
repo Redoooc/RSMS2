@@ -219,12 +219,12 @@ onMounted(()=>{
       if(now=='root') useSystemSettingStore().ShowLeftDrawer=true
     },{ once: true })
   }
-  useSchedulerStore().loopFlagForStart = true
-  useSchedulerStore().start()
+  useSchedulerStore().loopFlagForStart = true //Scheduler enables loop(function start()) start flag
+  useSchedulerStore().start() //Scheduler enables loop(function start()) start
 })
 
 onBeforeUnmount(()=>{
-  useSchedulerStore().loopFlagForStart = false
+  useSchedulerStore().loopFlagForStart = false //Scheduler enables loop(function start()) end
 })
 </script>
 

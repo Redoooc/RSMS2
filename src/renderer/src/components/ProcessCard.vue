@@ -8,8 +8,11 @@
     <template v-slot:subtitle>
       <div class="d-flex py-3 justify-space-between">
         <h4 class="text-h5">{{apply_item.apply_id}}</h4>
-        <h4 :class="`text-h6 font-weight-bold ${statusSubtitleColor[apply_item.apply_status]}`">
+        <h4 v-if="apply_item.user_status != 'overdue'" :class="`text-h6 font-weight-bold ${statusSubtitleColor[apply_item.apply_status]}`">
           {{statusSubtitle[apply_item.apply_status]}}
+        </h4>
+        <h4 v-else :class="`text-h6 font-weight-bold text-red`">
+          逾期未还
         </h4>
       </div>
       <div class="d-flex py-3 justify-space-between">
@@ -193,7 +196,7 @@ const statusSubtitle:{ [KEY:string]: string} = {
 const statusSubtitleColor:{ [KEY:string]: string} = {
   'process': 'text-light-blue',
   'process-pass': 'text-light-green',
-  'process-forbid': 'text-red',
+  'process-forbid': 'text-yellow-darken-3',
 }
 defineProps<{
   apply_item:ApplyArray,
