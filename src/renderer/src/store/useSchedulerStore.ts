@@ -31,6 +31,8 @@ const CheckObject = (objectA: object, objectB: object, filter: string[]): boolea
 const monitorFunction = async <T>(func: (...args: any[]) => Promise<T>, timeout: number, ...args: any[]): Promise<T|string|null> => {
   let timeoutId: NodeJS.Timeout;
 
+  timeout = func.name == 'ReSetTimeFunction'?useSystemSettingStore().SystemSetting['源柜通讯设置']['单次校时指令超时时间'].value:timeout //ReSet the Board Time need more time
+
   const timeoutPromise = new Promise<T|string|null>((resolve) => {
     timeoutId = setTimeout(() => {
       resolve("MonitorTimeOut");
@@ -58,6 +60,7 @@ export const useSchedulerStore = defineStore('Scheduler', {
     queue0recorder: Array.from({ length: SchedulerMax }, () => 0) as number[],
     queue0cache: Array.from({ length: SchedulerMax }, () => null) as any[],
     queue0enable: Array.from({ length: SchedulerMax }, () => false) as boolean[],
+    queue0same: Array.from({ length: SchedulerMax }, () => []) as any[][],
     loopFlagForStart: false as boolean
   }),
   actions: {
@@ -72,6 +75,14 @@ export const useSchedulerStore = defineStore('Scheduler', {
       await new Promise(resolve => {
         Option.hasOwnProperty('seize') && Option.seize!.enabled ? this.queue0[executeID].splice(0,0,{ resolve: resolve, option: Option }):this.queue0[executeID].push({ resolve: resolve, option: Option })
       })
+      // avoid two tasks had same ip are sent by different channel of scheduler
+      if ((this.queue0same.findIndex((ipArray) => (ipArray.findIndex((ip) => ip == Value.ip) != -1))) != -1) {
+        return null
+      } else {
+        this.queue0same[executeID].push(Value.ip)
+      }
+
+      this.queue0status[executeID] = true   //注册状态位
       //延时器
       await new Promise(resolve => setTimeout(resolve, Option.hasOwnProperty('delay')?Option.delay:0))
       //执行器
@@ -98,7 +109,6 @@ export const useSchedulerStore = defineStore('Scheduler', {
     async executeTask(FUNCTION, Value: any, executeID:number, _Option: OPTION) {
       const cache0index = this.queue0cache.findIndex((cache:any) =>{return CheckObject(cache,Value,[])})    //查询缓存器
       this.queue0cache[executeID] = cache0index==-1?Value:null    //注册缓存器
-      this.queue0status[executeID] = true   //注册状态位
 
       let res:any = null
       try{
@@ -109,6 +119,7 @@ export const useSchedulerStore = defineStore('Scheduler', {
 
       this.queue0cache[executeID] = null
       this.queue0status[executeID] = false
+      this.queue0same[executeID].splice(0,1)
 
       this.queue0recorder[executeID]++    //注册记录器
 

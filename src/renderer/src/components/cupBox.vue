@@ -151,6 +151,13 @@
       <v-col cols="4">
         <v-card class="mx-auto" width="auto" height="100px" flat
                 elevation="0">
+          <v-btn v-if="useUserDataStore().UserData.authority=='root' && needResetTime"
+            :loading="timeResettingStatus"
+            style="margin: 10px;width: 70px;height: 70px;"
+            variant="outlined"
+            @click="clickToReSetBoardTime()">
+            {{reSetTimeTips}}
+          </v-btn>
         </v-card>
       </v-col>
     </v-row>
@@ -206,6 +213,10 @@ const ChannelStatus = ref('none')
 const bustSwitchCache = ref([0,0])
 const busyTimes  = Math.round(((useSystemSettingStore().SystemSetting['源柜通讯设置']['调度器队列累计下限'].value)*(useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value))/useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value) + 2*(useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value)/useSystemSettingStore().SystemSetting['源柜通讯设置']['请求调度最短时间'].value
 const pushQueue : Ref<any[]> = ref([]) //queue of blocker
+let needResetTime = ref(false)
+let askResetTime = ref(false)
+let timeResettingStatus = ref(false)
+let reSetTimeTips = ref('校时')
 let resTemp = ref(0)
 
 const ChannelStatusType = (ChannelStatus)=>{
@@ -224,11 +235,23 @@ const SourcesInfo:Ref<CupBoxSource> = ref(empty)
 const UserInfo:Ref<CupBoxUserInfo> = ref({} as CupBoxUserInfo)
 const BoxLoading = ref(true)
 
+function clickToReSetBoardTime() {
+  askResetTime.value= true
+  timeResettingStatus.value = true
+  setTimeout(()=>{
+    askResetTime.value= false
+    reSetTimeTips.value = '重试'
+  },(useSystemSettingStore().SystemSetting['源柜通讯设置']['校时状态最大等待时间'].value-10) * 1000)
+  setTimeout(()=>{
+    timeResettingStatus.value = false
+  },useSystemSettingStore().SystemSetting['源柜通讯设置']['校时状态最大等待时间'].value * 1000)
+}
+
 const Function = async (Value: any, ID: number) => {
   return new Promise(resolve => {
     try{
       useBoardTCPStore().CreatSocket(ID, Value.ip, Value.port)
-      useBoardTCPStore().GetCount(ID)
+      useBoardTCPStore().GetCount(ID, useSystemSettingStore().SystemSetting['源柜通讯设置']['单次调度最大超时时间'].value)
         .then(async (res: any) => {
           for (let tick = 0; tick < 200; tick++) {
             if (typeof res != 'string' && res != null) {
@@ -252,10 +275,30 @@ const Function = async (Value: any, ID: number) => {
   })
 }
 
+const ReSetTimeFunction = async (Value: any, ID: number) => {
+  return new Promise(resolve => {
+    try {
+      useBoardTCPStore().CreatSocket(ID, Value.ip, Value.port)
+      useBoardTCPStore().ReSetTime(ID, moment().unix(), useSystemSettingStore().SystemSetting['源柜通讯设置']['单次校时指令超时时间'].value)
+        .then((_res)=>{
+          if (_res == true){
+            askResetTime.value = false
+            needResetTime.value = false
+          }
+          useBoardTCPStore().DropSocket(ID)
+          resolve(_res)
+            })
+    } catch (_e) {
+      console.error('ReSetTimeFunction:', _e)
+      resolve(undefined)
+    }
+  })
+}
+
 const OnceCount = (ip: string)=>{
-  if(typeof callback.value[0]=='number'){
-    const res = Scheduler.add(
-      Function,
+  if(askResetTime.value) {
+    Scheduler.add(
+      ReSetTimeFunction,
       {
         ip: ip,
         port: 5000
@@ -263,37 +306,51 @@ const OnceCount = (ip: string)=>{
       {
         delay: 0
       })
-    res.then(async (r) => {
-      if (r != null && typeof r != 'string' && typeof r[0] == 'number' && r[0] != 0) {
-        callback.value = r
-        callback.value[2] = moment().unix()
-        if (r[0] != resTemp.value) { //1 data per second
-          resTemp.value = r[0]
-          if (pushQueue.value.length != 0) { //Blocker, used to deal with occasional concurrent situations
-            await new Promise(resolve => {
-              pushQueue.value.splice(pushQueue.value.length - 1, 0, { resolve: resolve })
-            })
-          } else {
-            pushQueue.value.push({ resolve: () => {} }) //empty function
+  } else {
+    if (typeof callback.value[0] == 'number') {
+      const res = Scheduler.add(
+        Function,
+        {
+          ip: ip,
+          port: 5000
+        },
+        {
+          delay: 0
+        })
+      res.then(async (r) => {
+        if (r != null && typeof r != 'string' && typeof r[0] == 'number' && r[0] != 0) {
+          callback.value = r
+          callback.value[2] = moment().unix()
+          needResetTime.value = callback.value[0] < callback.value[2] - 360 // check if we need to reset board time or not
+          if (r[0] != resTemp.value) { //1 data per second
+            resTemp.value = r[0]
+            if (pushQueue.value.length != 0) { //Blocker, used to deal with occasional concurrent situations in writing data to log file
+              await new Promise(resolve => {
+                pushQueue.value.splice(pushQueue.value.length - 1, 0, { resolve: resolve })
+              })
+            } else { // the first task don't have Blocker and resolve()
+              pushQueue.value.push({
+                resolve: () => {
+                }
+              }) //empty function
+            }
+            await useCounterSQLStore().pushCounterData(CounterSQLID.value, r[0], r[1])
+            pushQueue.value.shift().resolve()
           }
-          await useCounterSQLStore().pushCounterData(CounterSQLID.value, r[0], r[1])
-          pushQueue.value.shift().resolve()
         }
+      })
+      if (bustSwitchCache[1] == 0) {
+        bustSwitchCache[0] = callback[0]
+        bustSwitchCache[1]++
+      } else if (bustSwitchCache[1] >= busyTimes) {
+        ChannelStatus.value = bustSwitchCache[0] == callback[0] ? 'busy' : ChannelStatus.value
+        bustSwitchCache[1] = 0
+      } else {
+        bustSwitchCache[1]++
       }
-    })
-    if(bustSwitchCache[1]==0){
-      bustSwitchCache[0] = callback[0]
-      bustSwitchCache[1] ++
+    } else {
+      callback.value = [0, 0]
     }
-    else if(bustSwitchCache[1]>=busyTimes){
-      ChannelStatus.value = bustSwitchCache[0]==callback[0]?'busy':ChannelStatus.value
-      bustSwitchCache[1] = 0
-    }else {
-      bustSwitchCache[1] ++
-    }
-  }
-  else {
-    callback.value = [0,0]
   }
 }
 
@@ -475,10 +532,9 @@ const GetCount = async (ip: string) => {
     if((callback.value[0]==0 && IntervalID.value!=null) || ((callback.value[2] < moment().unix()-useSystemSettingStore().SystemSetting['源柜通讯设置']['探测器连接超时检测时间'].value && IntervalID.value!=null))){
       clearInterval(IntervalID.value)
       IntervalID.value = null
-      callback.value[0]=0
       ChannelStatus.value='none'
     }
-    else if(callback.value[0]==0 && IntervalID.value==null){
+    else if(IntervalID.value==null){
       IntervalCount(ip)
     }
   },Math.random()*5000 + 5000)

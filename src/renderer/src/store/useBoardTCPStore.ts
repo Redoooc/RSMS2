@@ -21,6 +21,12 @@ let DropSocket = edge.func({
   methodName: 'DropSocket'
 })
 
+let SetTime = edge.func({
+  assemblyFile: _path + '/plugins/BoardTCPHandle4.8.dll',
+  typeName: 'BoardTCPHandle4._8.TcpClientHandler',
+  methodName: 'ReSetTime'
+})
+
 export const useBoardTCPStore = defineStore('BoardTCP', {
   state: () => ({
     CallBack : "none",
@@ -144,10 +150,10 @@ export const useBoardTCPStore = defineStore('BoardTCP', {
         })
       }
     },
-    async GetCount(this:any,index:number):Promise<number[]|string|null>{
+    async GetCount(this:any,index:number,timeout:number):Promise<number[]|string|null>{
       try {
         return new Promise((resolve, reject) => {
-          GetCount({ index: index }, function(_error, _CallBack) {
+          GetCount({ index: index, timeout: timeout }, function(_error, _CallBack) {
             if (_error) {
               reject(_error);
             } else {
@@ -161,6 +167,26 @@ export const useBoardTCPStore = defineStore('BoardTCP', {
           setTimeout(() => {
             resolve([0,0])
           }, 100);
+        })
+      }
+    },
+    async ReSetTime(this:any,index:number,timeStamp:number,timeout:number) {
+      try {
+        return new Promise((resolve, reject) => {
+          SetTime({ index: index, TimeStamp: timeStamp, timeout:timeout }, function(_error, _CallBack) {
+            if (_error) {
+              reject(_error);
+            } else {
+              resolve(_CallBack);
+            }
+          })
+        })
+      } catch (error) {
+        console.error('Error:', error);
+        return new Promise((resolve, _reject) => {
+          setTimeout(() => {
+            resolve(false)
+          }, 1000);
         })
       }
     },

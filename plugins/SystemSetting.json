@@ -40,39 +40,51 @@
   },
   "调度器最短扫描时间": {
    "title": "调度器最短扫描时间",
-   "type": "text",
+   "type": "number",
    "tips": "~ms",
-   "value": "20"
+   "value": 20
   },
   "单次调度最大超时时间": {
    "title": "单次调度最大超时时间",
-   "type": "text",
+   "type": "number",
    "tips": "~ms",
-   "value": "500"
+   "value": 500
   },
   "调度器队列累计下限": {
    "title": "调度器队列累计下限",
-   "type": "text",
+   "type": "number",
    "tips": "",
-   "value": "2"
+   "value": 2
   },
   "调度器队列累计上限": {
    "title": "调度器队列累计上限",
-   "type": "text",
+   "type": "number",
    "tips": "",
-   "value": "500"
+   "value": 500
   },
   "请求调度最短时间": {
    "title": "请求调度最短时间",
-   "type": "text",
+   "type": "number",
    "tips": "~ms",
-   "value": "500"
+   "value": 500
   },
   "探测器连接超时检测时间": {
    "title": "探测器连接超时检测时间",
-   "type": "text",
+   "type": "number",
    "tips": "~s",
-   "value": "20"
+   "value": 20
+  },
+  "单次校时指令超时时间": {
+   "title": "单次校时指令超时时间",
+   "type": "number",
+   "tips": "~ms",
+   "value": 3000
+  },
+  "校时状态最大等待时间": {
+   "title": "校时状态最大等待时间",
+   "type": "number",
+   "tips": "~s",
+   "value": 40
   }
  },
  "系统设置": {
@@ -129,33 +141,33 @@
   },
   "计数率第一阈值": {
    "title": "",
-   "type": "text",
+   "type": "number",
    "tips": "~cps",
    "value": 50
   },
   "计数率第二阈值": {
    "title": "",
-   "type": "text",
+   "type": "number",
    "tips": "~cps",
    "value": 100
   },
   "计数率第三阈值": {
    "title": "",
-   "type": "text",
+   "type": "number",
    "tips": "~cps",
    "value": 150
   },
   "计数率第四阈值": {
    "title": "",
-   "type": "text",
+   "type": "number",
    "tips": "~cps",
    "value": 200
   },
   "计数率第五阈值": {
    "title": "",
-   "type": "text",
+   "type": "number",
    "tips": "~cps",
-   "value": "10000"
+   "value": 10000
   }
  },
  "探测器计数存储设置": {

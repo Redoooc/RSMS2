@@ -59,3 +59,9 @@ useCounterSQLStore.ts重构完成，支持修改数据包个数和数据包内�
 增加了在放射源超时未还的情况下审核页面提示逾期未还的功能(修改init-sql.sql的update_apply_list_event_status事件实现)(超时后user_status变为overdue，若超时还源，user_status保持overdue不变但item_status转为end从而不再在审核页面显示)
 修改了init-sql.sql的after_Update_apply_list_change_sources_list_SourcesStatus触发器避免由于其他源情况变更造成当前源状态显示错误
 修改SourceList.vue以修复使用活度数值筛选时“填入数据再删去数据并不填入新数据时”筛选条件不被清楚而继续保留
+
+/*************************2024.12.12 17:56**************************/
+修改下位机程序的HAL_Time.c,使得下位机在日期到达9月30日之后自动跳转至4月1日的问题得到修复
+修改BoardTCPHandle4.8.dll中的getcount函数（添加timeout属性）使得其接收上位机的超时时间设置并在超时后能够避免发送指令到下位机（即socket更新之后上个socket未执行完的指令仍执行的问题被修复，该问题会导致发送指令至错误ip的下位机并不会处理返回数据，造成数据浪费以及在调度器中存在两种任务时产生互相干扰）
+增加了校时功能
+为调度器增加了在两个相同ip的任务在不同的队列同时开始处理时，将其中一个直接return null
