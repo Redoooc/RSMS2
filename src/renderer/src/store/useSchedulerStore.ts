@@ -31,7 +31,7 @@ const CheckObject = (objectA: object, objectB: object, filter: string[]): boolea
 const monitorFunction = async <T>(func: (...args: any[]) => Promise<T>, timeout: number, ...args: any[]): Promise<T|string|null> => {
   let timeoutId: NodeJS.Timeout;
 
-  timeout = func.name == 'ReSetTimeFunction'?useSystemSettingStore().SystemSetting['源柜通讯设置']['单次校时指令超时时间'].value:timeout //ReSet the Board Time need more time
+  timeout = func.name == 'ReSetTimeFunction'?useSystemSettingStore().SystemSetting['探测器校时功能设置']['单次校时指令超时时间'].value:timeout //ReSet the Board Time need more time
 
   const timeoutPromise = new Promise<T|string|null>((resolve) => {
     timeoutId = setTimeout(() => {

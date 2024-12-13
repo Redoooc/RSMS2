@@ -241,10 +241,10 @@ function clickToReSetBoardTime() {
   setTimeout(()=>{
     askResetTime.value= false
     reSetTimeTips.value = '重试'
-  },(useSystemSettingStore().SystemSetting['源柜通讯设置']['校时状态最大等待时间'].value-10) * 1000)
-  setTimeout(()=>{
+  },useSystemSettingStore().SystemSetting['探测器校时功能设置']['校时状态最大等待时间'].value * 750)
+  setTimeout(()=>{ //At this time, although it is in the loading status, it is confirming whether the timing is successful through the timestamp returned by the GetCount() function
     timeResettingStatus.value = false
-  },useSystemSettingStore().SystemSetting['源柜通讯设置']['校时状态最大等待时间'].value * 1000)
+  },useSystemSettingStore().SystemSetting['探测器校时功能设置']['校时状态最大等待时间'].value * 1000)
 }
 
 const Function = async (Value: any, ID: number) => {
@@ -279,7 +279,7 @@ const ReSetTimeFunction = async (Value: any, ID: number) => {
   return new Promise(resolve => {
     try {
       useBoardTCPStore().CreatSocket(ID, Value.ip, Value.port)
-      useBoardTCPStore().ReSetTime(ID, moment().unix(), useSystemSettingStore().SystemSetting['源柜通讯设置']['单次校时指令超时时间'].value)
+      useBoardTCPStore().ReSetTime(ID, moment().unix(), useSystemSettingStore().SystemSetting['探测器校时功能设置']['单次校时指令超时时间'].value)
         .then((_res)=>{
           if (_res == true){
             askResetTime.value = false
@@ -321,7 +321,7 @@ const OnceCount = (ip: string)=>{
         if (r != null && typeof r != 'string' && typeof r[0] == 'number' && r[0] != 0) {
           callback.value = r
           callback.value[2] = moment().unix()
-          needResetTime.value = callback.value[0] < callback.value[2] - 360 // check if we need to reset board time or not
+          needResetTime.value = callback.value[0] < callback.value[2] - (useSystemSettingStore().SystemSetting['探测器校时功能设置']['校时提示检测阈值'].value*60) // check if we need to reset board time or not
           if (r[0] != resTemp.value) { //1 data per second
             resTemp.value = r[0]
             if (pushQueue.value.length != 0) { //Blocker, used to deal with occasional concurrent situations in writing data to log file

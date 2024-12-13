@@ -65,3 +65,4 @@ useCounterSQLStore.ts重构完成，支持修改数据包个数和数据包内�
 修改BoardTCPHandle4.8.dll中的getcount函数（添加timeout属性）使得其接收上位机的超时时间设置并在超时后能够避免发送指令到下位机（即socket更新之后上个socket未执行完的指令仍执行的问题被修复，该问题会导致发送指令至错误ip的下位机并不会处理返回数据，造成数据浪费以及在调度器中存在两种任务时产生互相干扰）
 增加了校时功能
 为调度器增加了在两个相同ip的任务在不同的队列同时开始处理时，将其中一个直接return null
+调用BoardTCPHandle4.8.dll中的GetCount()函数和ReSetTime()函数时，如有报错将通过webstorm中的控制台返回而非程序中F12的控制台Console返回

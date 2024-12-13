@@ -73,18 +73,6 @@
    "type": "number",
    "tips": "~s",
    "value": 20
-  },
-  "单次校时指令超时时间": {
-   "title": "单次校时指令超时时间",
-   "type": "number",
-   "tips": "~ms",
-   "value": 3000
-  },
-  "校时状态最大等待时间": {
-   "title": "校时状态最大等待时间",
-   "type": "number",
-   "tips": "~s",
-   "value": 40
   }
  },
  "系统设置": {
@@ -188,6 +176,32 @@
    "type": "number",
    "tips": "~条",
    "value": 50
+  }
+ },
+ "探测器校时功能设置": {
+  "title": {
+   "title": "探测器校时功能设置",
+   "type": "title",
+   "tips": "",
+   "value": true
+  },
+  "单次校时指令超时时间": {
+   "title": "单次校时指令超时时间",
+   "type": "number",
+   "tips": "~ms",
+   "value": 3000
+  },
+  "校时状态最大等待时间": {
+   "title": "校时状态最大等待时间",
+   "type": "number",
+   "tips": "~s",
+   "value": 40
+  },
+  "校时提示检测阈值": {
+   "title": "校时提示检测阈值",
+   "type": "number",
+   "tips": "~min",
+   "value": 5
   }
  }
 }
